@@ -1,6 +1,7 @@
 version: '3.9'
 services:
   frontend:
+    container_name: univer-frontend
     image: node:20-alpine
     working_dir: /app
     volumes:
@@ -12,6 +13,7 @@ services:
       - backend
 
   backend:
+    container_name: univer-backend
     image: python:3.12-slim
     working_dir: /app
     volumes:
@@ -28,6 +30,7 @@ services:
       - redis
 
   postgres:
+    container_name: univer-db
     image: postgres:16
     environment:
       POSTGRES_USER: lms
@@ -40,11 +43,13 @@ services:
       - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
   redis:
+    container_name: univer-redis
     image: redis:7-alpine
     ports:
       - "6379:6379"
 
   nginx:
+    container_name: univer-proxy
     image: nginx:1.27-alpine
     ports:
       - "80:80"
