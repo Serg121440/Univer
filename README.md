@@ -53,3 +53,23 @@ docker compose up --build
 ```bash
 cd backend && PYTHONPATH=. pytest
 ```
+
+## Деплой (Production)
+
+Для деплоя на сервер:
+
+1. **Настройка окружения:**
+   Скопируйте настройки из `docker-compose.yml` в ваш CI/CD или создайте `.env` файл.
+   **Обязательно** измените `SECRET_KEY` на надежный пароль.
+
+2. **Запуск через Docker Compose:**
+   ```bash
+   docker compose -f docker-compose.yml up -d
+   ```
+   Приложение будет доступно через Nginx на 80 порту.
+
+3. **База данных:**
+   Схема инициализируется автоматически при первом запуске из `database/schema.sql`.
+
+4. **SSL:**
+   Рекомендуется настроить Certbot (Let's Encrypt) на хосте или добавить контейнер с certbot в docker-compose для работы по HTTPS.
