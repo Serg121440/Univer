@@ -15,3 +15,9 @@
  GET /auth/register 200 in 4469ms
  ✓ Compiled /auth/login in 356ms (551 modules)
  GET /auth/login 200 in 462ms
+ ⚠ Found a change in next.config.mjs. Restarting the server to apply the changes...
+  ▲ Next.js 15.0.0
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 6.2s
