@@ -1,8 +1,26 @@
-from datetime import datetime
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
+from datetime import datetime, timezone
+import enum
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
+class UserRole(str, enum.Enum):
+    STUDENT = "student"
+    TEACHER = "teacher"
+    ADMIN = "admin"
+
+class LessonType(str, enum.Enum):
+    VIDEO = "video"
+    PDF = "pdf"
+    DOC = "doc"
+    QUIZ = "quiz"
+    HOMEWORK = "homework"
+
+class HomeworkStatus(str, enum.Enum):
+    PENDING = "pending"
+    REVIEWING = "reviewing"
+    APPROVED = "approved"
+    REJECTED = "rejected"
 
 class User(Base):
     __tablename__ = "users"
@@ -11,9 +29,9 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     password_hash: Mapped[str] = mapped_column(Text, nullable=False)
-    role: Mapped[str] = mapped_column(String(20), nullable=False)
+    role: Mapped[str] = mapped_column(String(20), default=UserRole.STUDENT, nullable=False)
     avatar: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class Course(Base):
@@ -23,7 +41,7 @@ class Course(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     cover_image: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     modules: Mapped[list["Module"]] = relationship(back_populates="course", cascade="all, delete-orphan")
 
@@ -62,7 +80,7 @@ class Homework(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     student_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     lesson_id: Mapped[int] = mapped_column(ForeignKey("lessons.id"), nullable=False)
-    status: Mapped[str] = mapped_column(String(20), default="pending")
+    status: Mapped[str] = mapped_column(String(20), default=HomeworkStatus.PENDING)
     teacher_comment: Mapped[str | None] = mapped_column(Text, nullable=True)
     grade: Mapped[float | None] = mapped_column(Float, nullable=True)
-    submitted_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    submitted_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))

@@ -1,4 +1,6 @@
 'use client';
+import { API_URL } from "@/store/config";
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -8,7 +10,7 @@ export default function CourseDetailPage() {
   const [modules, setModules] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/courses/modules`)
+    fetch(`${API_URL}/courses/modules`)
       .then(res => res.json())
       .then(data => {
         setModules(data.filter((m: any) => m.course_id === parseInt(id as string)));

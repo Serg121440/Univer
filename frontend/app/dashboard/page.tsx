@@ -1,6 +1,8 @@
 'use client';
+import { API_URL } from "@/store/config";
+
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from "@/store/authStore";
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -8,7 +10,7 @@ export default function DashboardPage() {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8000/courses')
+    fetch(API_URL + '/courses')
       .then(res => res.json())
       .then(data => setCourses(data));
   }, []);

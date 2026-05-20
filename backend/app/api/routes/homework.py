@@ -16,12 +16,11 @@ def list_homework(db: Session = Depends(get_db)) -> list[Homework]:
 
 @router.post("")
 def submit_homework(payload: HomeworkCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> dict:
-    if not db.get(User, payload.student_id):
-        raise HTTPException(status_code=404, detail="Student not found")
+    # IDOR Fix: Force student_id to be the current authenticated user's ID
     if not db.get(Lesson, payload.lesson_id):
         raise HTTPException(status_code=404, detail="Lesson not found")
 
-    hw = Homework(student_id=payload.student_id, lesson_id=payload.lesson_id, status="reviewing")
+    hw = Homework(student_id=current_user.id, lesson_id=payload.lesson_id, status="reviewing")
     db.add(hw)
     db.commit()
     db.refresh(hw)

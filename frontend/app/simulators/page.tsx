@@ -1,5 +1,6 @@
 'use client';
 
+
 export default function Simulators() {
   return (
     <div style={{ padding: 40, background: '#0b1020', minHeight: '100vh', color: '#fff' }}>

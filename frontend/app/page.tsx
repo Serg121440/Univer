@@ -1,3 +1,4 @@
+import { API_URL } from "@/store/config";
 const features = [
   'Авторизация: email/password + JWT + role-based UX',
   'Управление курсами, модулями и уроками',
@@ -19,7 +20,7 @@ export default function Home() {
         ))}
       </section>
       <p style={{ marginTop: 28, opacity: 0.7 }}>
-        API docs: <code>http://localhost:8000/docs</code>
+        API docs: <code>${API_URL}/docs</code>
       </p>
     </main>
   );

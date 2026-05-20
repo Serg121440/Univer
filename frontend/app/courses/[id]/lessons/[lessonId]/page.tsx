@@ -1,8 +1,10 @@
 'use client';
+import { API_URL } from "@/store/config";
+
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useAuthStore } from '@/store/authStore';
-import { getUserIdFromToken } from '@/store/utils';
+import { useAuthStore } from "@/store/authStore";
+import { getUserIdFromToken } from "@/store/utils";
 
 export default function LessonPage() {
   const { id, lessonId } = useParams();
@@ -16,7 +18,7 @@ export default function LessonPage() {
       return;
     }
 
-    const res = await fetch('http://localhost:8000/homework', {
+    const res = await fetch(API_URL + '/homework', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
