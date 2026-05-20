@@ -1,40 +1,56 @@
 # LMS «Управляющий маркетплейсами 2026»
 
-Рабочий MVP backend+frontend для обучения менеджеров маркетплейсов.
+Современная AI EdTech платформа для подготовки специалистов маркетплейсов.
 
-## Что уже реализовано
+## Реализованный функционал (MVP+)
 
-- FastAPI API с базовыми доменными сущностями: Users, Courses, Modules, Lessons, Homework.
-- JWT auth (`/auth/register`, `/auth/login`) с сохранением пользователей в БД.
-- CRUD-основа для курсов, модулей и уроков.
-- Флоу домашних заданий: отправка и teacher review.
-- Docker Compose инфраструктура: frontend, backend, postgres, redis, nginx.
-- PostgreSQL bootstrap schema.
+1.  **Backend (FastAPI):**
+    *   **Безопасность:** JWT Auth (PyJWT), RBAC (Student/Teacher/Admin), Rate Limiting.
+    *   **Бизнес-логика:** Управление курсами, модулями, уроками и домашними заданиями.
+    *   **Инструменты:** Калькулятор Unit-экономики 2026, AI SEO Checker (mock), YML Validator.
+2.  **Frontend (Next.js 15):**
+    *   Premium Dark UI на Tailwind CSS + Framer Motion.
+    *   Интерактивные дашборды и плеер уроков.
+3.  **Инфраструктура:**
+    *   Docker Compose с Nginx (Reverse Proxy).
+    *   Production-ready Dockerfiles.
+    *   Поддержка PaaS (динамические порты, env-секреты).
 
-## Запуск
+## Быстрый запуск (Dev)
 
 ```bash
 docker compose up --build
 ```
+Фронтенд будет доступен на `http://localhost:3000`, бэкенд на `http://localhost:8000`.
 
-## Основные endpoint'ы
+## Деплой и Бета-тестирование
 
-- `GET /health`
-- `POST /auth/register`
-- `POST /auth/login`
-- `GET/POST /courses`
-- `GET/POST /courses/modules`
-- `GET/POST /courses/lessons`
-- `GET/POST /homework`
-- `PATCH /homework/{homework_id}`
+Проект готов к деплою для бета-тестов.
 
-## Далее по roadmap
+### 1. Подготовка окружения
+Создайте файл `.env` на базе следующих переменных:
 
-1. Google Drive Sync service (folder scan + material sync).
-2. AI SEO Checker (embeddings + vector search).
-3. Unit Economics 2026 calculator.
-4. Simulator modules and gamification.
+```env
+SECRET_KEY=ваша_секретная_строка_минимум_32_символа
+POSTGRES_USER=lms
+POSTGRES_PASSWORD=надежный_пароль_бд
+POSTGRES_DB=lms
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+```
 
----
+### 2. Запуск в Production/Beta
+```bash
+docker compose up -d
+```
+Убедитесь, что порты 80 (Nginx) открыты. База данных и Redis теперь изолированы внутри Docker-сети и недоступны снаружи для безопасности.
 
-**Ссылка на чат:** [https://chatgpt.com/s/cd_6a0a0daa84708191a2c28c6c37c1d458](https://chatgpt.com/s/cd_6a0a0daa84708191a2c28c6c37c1d458)
+### 3. Тестирование
+```bash
+cd backend && PYTHONPATH=. pytest
+```
+
+## Безопасность
+- Все секреты вынесены из кода.
+- Исправлены уязвимости IDOR.
+- Реализована защита от брутфорса.
+- База данных защищена паролем.

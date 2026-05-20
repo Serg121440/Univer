@@ -1,0 +1,57 @@
+version: '3.9'
+services:
+  frontend:
+    container_name: univer-frontend
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    depends_on:
+      - backend
+
+  backend:
+    container_name: univer-backend
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - APP_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    container_name: univer-db
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lms}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-lms}
+    # No ports exposed to host for security
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  redis:
+    container_name: univer-redis
+    image: redis:7-alpine
+    # No ports exposed to host for security
+
+  nginx:
+    container_name: univer-proxy
+    image: nginx:1.27-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  pg_data:
