@@ -1,0 +1,5 @@
+[tool.bandit]
+exclude_dirs = ["backend/tests", "frontend"]
+skips = [
+    "B101",  # assert in tests
+]
