@@ -14,6 +14,11 @@ def list_homework(db: Session = Depends(get_db)) -> list[Homework]:
     return db.query(Homework).order_by(Homework.id.desc()).all()
 
 
+@router.get("/me", response_model=list[HomeworkOut])
+def list_my_homework(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> list[Homework]:
+    return db.query(Homework).filter(Homework.student_id == current_user.id).order_by(Homework.id.desc()).all()
+
+
 @router.post("")
 def submit_homework(payload: HomeworkCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> dict:
     # IDOR Fix: Force student_id to be the current authenticated user's ID
