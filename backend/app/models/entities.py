@@ -1,7 +1,25 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from enum import Enum
 from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
+
+
+class UserRole(str, Enum):
+    student = "student"
+    teacher = "teacher"
+    admin = "admin"
+
+
+class LessonType(str, Enum):
+    video = "video"
+    text = "text"
+    quiz = "quiz"
+    task = "task"
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class User(Base):
@@ -13,7 +31,7 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(Text, nullable=False)
     role: Mapped[str] = mapped_column(String(20), nullable=False)
     avatar: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
 
 class Course(Base):
@@ -23,7 +41,7 @@ class Course(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     cover_image: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
     modules: Mapped[list["Module"]] = relationship(back_populates="course", cascade="all, delete-orphan")
 
@@ -65,4 +83,4 @@ class Homework(Base):
     status: Mapped[str] = mapped_column(String(20), default="pending")
     teacher_comment: Mapped[str | None] = mapped_column(Text, nullable=True)
     grade: Mapped[float | None] = mapped_column(Float, nullable=True)
-    submitted_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    submitted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)

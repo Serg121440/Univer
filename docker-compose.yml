@@ -2,29 +2,28 @@ version: '3.9'
 services:
   frontend:
     container_name: univer-frontend
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-    command: sh -c "npm install && npm run dev"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     depends_on:
       - backend
 
   backend:
     container_name: univer-backend
-    image: python:3.12-slim
-    working_dir: /app
-    volumes:
-      - ./backend:/app
-    command: sh -c "pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
-      - SECRET_KEY=super-secret
-      - APP_ENV=dev
-      - DATABASE_URL=postgresql://lms:lms@postgres:5432/lms
+      - SECRET_KEY=${SECRET_KEY}
+      - APP_ENV=${APP_ENV:-production}
+      - DATABASE_URL=${DATABASE_URL}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
     depends_on:
       - postgres
       - redis
@@ -33,11 +32,9 @@ services:
     container_name: univer-db
     image: postgres:16
     environment:
-      POSTGRES_USER: lms
-      POSTGRES_PASSWORD: lms
-      POSTGRES_DB: lms
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USER:-lms}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-lms}
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
@@ -45,8 +42,6 @@ services:
   redis:
     container_name: univer-redis
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
 
   nginx:
     container_name: univer-proxy

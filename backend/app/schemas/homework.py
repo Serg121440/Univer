@@ -1,14 +1,21 @@
+from enum import Enum
 from pydantic import BaseModel
 from datetime import datetime
 
 
+class HomeworkStatus(str, Enum):
+    pending = "pending"
+    reviewing = "reviewing"
+    approved = "approved"
+    rejected = "rejected"
+
+
 class HomeworkCreate(BaseModel):
-    student_id: int
     lesson_id: int
 
 
 class HomeworkReview(BaseModel):
-    status: str
+    status: HomeworkStatus
     teacher_comment: str = ""
     grade: float | None = None
 
