@@ -28,13 +28,48 @@ docker compose up --build
 - `GET/POST /homework`
 - `PATCH /homework/{homework_id}`
 
-## Далее по roadmap
+## Реализованный функционал (MVP)
 
-1. Google Drive Sync service (folder scan + material sync).
-2. AI SEO Checker (embeddings + vector search).
-3. Unit Economics 2026 calculator.
-4. Simulator modules and gamification.
+1.  **Backend (FastAPI):**
+    *   Полная схема БД (Users, Courses, Modules, Lessons, Homework).
+    *   JWT Auth + Role-Based Access Control (RBAC).
+    *   **Unit Economics 2026:** Калькулятор с учетом НДС 2026 и тарифов маркетплейсов.
+    *   **AI SEO Checker:** Сервис анализа ключевых слов.
+    *   **Google Drive Sync:** Основа для синхронизации материалов.
+2.  **Frontend (Next.js 15):**
+    *   Premium Dark UI на Tailwind CSS.
+    *   Dashboard студента и преподавателя.
+    *   Интерактивные инструменты (Calculator, SEO).
+    *   Система сдачи ДЗ.
 
----
+## Запуск
 
-**Ссылка на чат:** [https://chatgpt.com/s/cd_6a0a0daa84708191a2c28c6c37c1d458](https://chatgpt.com/s/cd_6a0a0daa84708191a2c28c6c37c1d458)
+```bash
+docker compose up --build
+```
+
+## Тестирование
+
+```bash
+cd backend && PYTHONPATH=. pytest
+```
+
+## Деплой (Production)
+
+Для деплоя на сервер:
+
+1. **Настройка окружения:**
+   Скопируйте настройки из `docker-compose.yml` в ваш CI/CD или создайте `.env` файл.
+   **Обязательно** измените `SECRET_KEY` на надежный пароль.
+
+2. **Запуск через Docker Compose:**
+   ```bash
+   docker compose -f docker-compose.yml up -d
+   ```
+   Приложение будет доступно через Nginx на 80 порту.
+
+3. **База данных:**
+   Схема инициализируется автоматически при первом запуске из `database/schema.sql`.
+
+4. **SSL:**
+   Рекомендуется настроить Certbot (Let's Encrypt) на хосте или добавить контейнер с certbot в docker-compose для работы по HTTPS.
