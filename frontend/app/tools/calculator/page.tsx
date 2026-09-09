@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { apiUrl } from '@/lib/api';
 
 export default function Calculator() {
   const [form, setForm] = useState({
@@ -9,7 +10,7 @@ export default function Calculator() {
   const [result, setResult] = useState<any>(null);
 
   const calculate = async () => {
-    const res = await fetch('http://localhost:8000/tools/calculator', {
+    const res = await fetch(apiUrl('/tools/calculator'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
