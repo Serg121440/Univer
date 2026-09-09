@@ -1,22 +1,10 @@
 /** @type {import('next').NextConfig} */
 
-// Resolved when the server starts, so it picks up runtime environment variables.
-const backendUrl = (
-  process.env.BACKEND_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:8000"
-).replace(/\/$/, "");
-
+// The backend proxy lives in app/api/[...path]/route.ts rather than in
+// rewrites(): Next.js resolves rewrite destinations at build time, which would
+// freeze BACKEND_URL into the image instead of reading it when the server runs.
 const nextConfig = {
   output: "standalone",
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${backendUrl}/:path*`,
-      },
-    ];
-  },
 };
 
 export default nextConfig;
