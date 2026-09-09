@@ -1,21 +1,21 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiUrl } from '@/lib/api';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student');
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:8000/auth/register', {
+      const res = await fetch(apiUrl('/auth/register'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name, email, password }),
       });
       if (res.ok) {
         alert('Registration successful!');
@@ -35,11 +35,10 @@ export default function RegisterPage() {
         <h2 style={{ marginBottom: 24 }}>Регистрация</h2>
         <input type="text" placeholder="Имя" value={name} onChange={e => setName(e.target.value)} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: 'none' }} required />
         <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: 'none' }} required />
-        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: 'none' }} required />
-        <select value={role} onChange={e => setRole(e.target.value)} style={{ width: '100%', padding: 10, marginBottom: 24, borderRadius: 6, border: 'none' }}>
-          <option value="student">Студент</option>
-          <option value="teacher">Преподаватель</option>
-        </select>
+        <input type="password" placeholder="Пароль (минимум 8 символов)" value={password} onChange={e => setPassword(e.target.value)} minLength={8} style={{ width: '100%', padding: 10, marginBottom: 8, borderRadius: 6, border: 'none' }} required />
+        <p style={{ fontSize: 12, opacity: 0.6, marginBottom: 24 }}>
+          Регистрация создаёт аккаунт студента. Роль преподавателя назначает администратор.
+        </p>
         <button type="submit" style={{ width: '100%', padding: 12, background: '#10b981', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 'bold', cursor: 'pointer' }}>Зарегистрироваться</button>
       </form>
     </div>

@@ -2,13 +2,14 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { apiUrl } from '@/lib/api';
 
 export default function CourseDetailPage() {
   const { id } = useParams();
   const [modules, setModules] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/courses/modules`)
+    fetch(apiUrl('/courses/modules'))
       .then(res => res.json())
       .then(data => {
         setModules(data.filter((m: any) => m.course_id === parseInt(id as string)));
