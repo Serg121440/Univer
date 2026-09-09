@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { getUserIdFromToken } from '@/store/utils';
+import { apiUrl } from '@/lib/api';
 
 export default function LessonPage() {
   const { id, lessonId } = useParams();
@@ -16,13 +17,13 @@ export default function LessonPage() {
       return;
     }
 
-    const res = await fetch('http://localhost:8000/homework', {
+    const res = await fetch(apiUrl('/homework'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ student_id: userId, lesson_id: parseInt(lessonId as string) }),
+      body: JSON.stringify({ lesson_id: parseInt(lessonId as string) }),
     });
 
     if (res.ok) {

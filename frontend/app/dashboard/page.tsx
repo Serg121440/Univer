@@ -2,13 +2,14 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
+import { apiUrl } from '@/lib/api';
 
 export default function DashboardPage() {
   const { role, logout } = useAuthStore();
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8000/courses')
+    fetch(apiUrl('/courses'))
       .then(res => res.json())
       .then(data => setCourses(data));
   }, []);

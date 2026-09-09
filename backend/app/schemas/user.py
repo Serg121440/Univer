@@ -1,13 +1,14 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Literal
 
 Role = Literal["student", "teacher", "admin"]
 
 
 class UserCreate(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=255)
     email: EmailStr
-    password: str
+    # bcrypt only uses the first 72 bytes, so reject longer secrets outright.
+    password: str = Field(min_length=8, max_length=72)
     role: Role = "student"
 
 

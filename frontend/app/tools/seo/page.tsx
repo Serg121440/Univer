@@ -1,12 +1,13 @@
 'use client';
 import { useState } from 'react';
+import { apiUrl } from '@/lib/api';
 
 export default function SEOChecker() {
   const [text, setText] = useState('');
   const [result, setResult] = useState<any>(null);
 
   const handleCheck = async () => {
-    const res = await fetch('http://localhost:8000/tools/seo-check', {
+    const res = await fetch(apiUrl('/tools/seo-check'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
