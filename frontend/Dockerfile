@@ -1,9 +1,7 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
-# npm install rather than npm ci: package-lock.json is out of sync with
-# package.json. Commit a regenerated lock file to restore reproducible installs.
-COPY package.json ./
-RUN npm install --no-audit --no-fund
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 COPY . .
 # Optional: bakes the backend URL into the client bundle when the platform can
 # pass build args. Without it the app calls same-origin /api/*, which the Next
