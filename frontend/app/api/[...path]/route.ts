@@ -15,8 +15,9 @@ export const dynamic = 'force-dynamic';
 const UPSTREAM_TIMEOUT_MS = 30_000;
 
 function backendUrl(): string {
-  const raw =
-    process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  // Only BACKEND_URL: NEXT_PUBLIC_* is build-time and RelaxDev fills it with a
+  // placeholder host during the image build.
+  const raw = process.env.BACKEND_URL || 'http://localhost:8000';
   return raw.replace(/\/$/, '');
 }
 
