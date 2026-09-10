@@ -1,13 +1,11 @@
-// Base URL for the backend API.
+// All browser calls go to this app's own origin under /api/*, where the route
+// handler in app/api/[...path]/route.ts forwards them to the backend named by
+// the runtime BACKEND_URL. That keeps requests same-origin (no CORS) and keeps
+// the backend address out of the client bundle.
 //
-// NEXT_PUBLIC_* values are inlined at build time, which is not available on
-// platforms that inject environment variables only at runtime. When it is unset
-// we fall back to same-origin `/api/*` requests, which the route handler in
-// app/api/[...path]/route.ts forwards to the runtime BACKEND_URL — this also
-// avoids CORS entirely.
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
-
+// Deliberately no NEXT_PUBLIC_API_URL escape hatch: NEXT_PUBLIC_* is inlined at
+// build time, and RelaxDev injects a placeholder value during the image build,
+// which would freeze a bogus host into every page.
 export function apiUrl(path: string): string {
-  const suffix = path.startsWith("/") ? path : `/${path}`;
-  return API_URL ? `${API_URL}${suffix}` : `/api${suffix}`;
+  return `/api${path.startsWith("/") ? path : `/${path}`}`;
 }

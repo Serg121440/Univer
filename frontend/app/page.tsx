@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { API_URL } from '@/lib/api';
 
 const features = [
   'Авторизация: email/password + JWT + role-based UX',
@@ -27,9 +26,6 @@ export default function Home() {
         <Link href="/dashboard" style={{ color: '#60a5fa' }}>Дашборд</Link>
         <Link href="/tools/calculator" style={{ color: '#60a5fa' }}>Калькулятор</Link>
       </nav>
-      <p style={{ marginTop: 28, opacity: 0.7 }}>
-        API docs: <code>{API_URL || '/api'}/docs</code>
-      </p>
     </main>
   );
 }

@@ -9,14 +9,21 @@ import { NextRequest } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// How long the backend has to start responding. Route handlers have no proxy
-// timeout of their own, so without this a backend that accepts the connection
-// and then stalls would pin a request until the platform's much longer limit.
-const UPSTREAM_TIMEOUT_MS = 30_000;
+// How long the backend has to start responding once the whole request has been
+// sent. Route handlers have no proxy timeout of their own, so without this a
+// backend that accepts the connection and then stalls would pin a request until
+// the platform's much longer limit.
+const RESPONSE_TIMEOUT_MS = 30_000;
+
+// While the client is still uploading, only a lack of progress counts as a
+// timeout. A large upload may legitimately take far longer than the response
+// timeout, and the backend cannot answer until the last byte arrives.
+const UPLOAD_IDLE_TIMEOUT_MS = 30_000;
 
 function backendUrl(): string {
-  const raw =
-    process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  // Only BACKEND_URL: NEXT_PUBLIC_* is build-time and RelaxDev fills it with a
+  // placeholder host during the image build.
+  const raw = process.env.BACKEND_URL || 'http://localhost:8000';
   return raw.replace(/\/$/, '');
 }
 
@@ -69,12 +76,33 @@ async function proxy(
 
   const controller = new AbortController();
   let timedOut = false;
-  const timer = setTimeout(() => {
-    timedOut = true;
-    controller.abort();
-  }, UPSTREAM_TIMEOUT_MS);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const arm = (ms: number) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, ms);
+  };
   // A browser that goes away should not leave the backend call running.
   request.signal.addEventListener('abort', () => controller.abort());
+
+  // With a body, the clock tracks upload progress and only switches to the
+  // response timeout once the last byte has been handed to fetch.
+  const body =
+    hasBody && request.body
+      ? request.body.pipeThrough(
+          new TransformStream<Uint8Array, Uint8Array>({
+            start: () => arm(UPLOAD_IDLE_TIMEOUT_MS),
+            transform: (chunk, out) => {
+              arm(UPLOAD_IDLE_TIMEOUT_MS);
+              out.enqueue(chunk);
+            },
+            flush: () => arm(RESPONSE_TIMEOUT_MS),
+          }),
+        )
+      : undefined;
+  if (!body) arm(RESPONSE_TIMEOUT_MS);
 
   let upstream: Response;
   try {
@@ -84,8 +112,8 @@ async function proxy(
       // Streamed, not buffered: a large upload must not be materialized in this
       // process before any of it reaches the backend. `duplex` is required by
       // undici whenever the body is a stream.
-      body: hasBody ? request.body : undefined,
-      ...(hasBody ? { duplex: 'half' } : {}),
+      body,
+      ...(body ? { duplex: 'half' } : {}),
       signal: controller.signal,
       redirect: 'manual',
       cache: 'no-store',
