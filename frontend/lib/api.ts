@@ -2,8 +2,9 @@
 //
 // NEXT_PUBLIC_* values are inlined at build time, which is not available on
 // platforms that inject environment variables only at runtime. When it is unset
-// we fall back to same-origin `/api/*` requests, which next.config.mjs rewrites
-// to the backend using the runtime BACKEND_URL — this also avoids CORS entirely.
+// we fall back to same-origin `/api/*` requests, which the route handler in
+// app/api/[...path]/route.ts forwards to the runtime BACKEND_URL — this also
+// avoids CORS entirely.
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
 export function apiUrl(path: string): string {
