@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from typing import Literal
 
 Role = Literal["student", "teacher", "admin"]
@@ -17,7 +17,13 @@ class UserLogin(BaseModel):
     password: str
 
 
+class RoleUpdate(BaseModel):
+    role: Role
+
+
 class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     email: EmailStr

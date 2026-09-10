@@ -34,6 +34,9 @@ export default function DashboardPage() {
           <p className="text-white/50 mt-1">Добро пожаловать, роль: <span className="text-blue-400 font-medium">{role}</span></p>
         </div>
         <div className="flex items-center gap-6">
+           {role === 'admin' && (
+             <Link href="/admin" className="hover:text-blue-400 transition-colors">Администрирование</Link>
+           )}
            <Link href="/tools/calculator" className="hover:text-blue-400 transition-colors">Калькулятор 2026</Link>
            <Link href="/tools/seo" className="hover:text-blue-400 transition-colors">SEO Checker</Link>
            <button onClick={handleLogout} className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all">Выйти</button>
