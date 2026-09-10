@@ -7,6 +7,7 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -35,7 +36,24 @@ export default function RegisterPage() {
         <h2 style={{ marginBottom: 24 }}>Регистрация</h2>
         <input type="text" placeholder="Имя" value={name} onChange={e => setName(e.target.value)} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: 'none', background: '#fff', color: '#0b1020' }} required />
         <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: 'none', background: '#fff', color: '#0b1020' }} required />
-        <input type="password" placeholder="Пароль (минимум 8 символов)" value={password} onChange={e => setPassword(e.target.value)} minLength={8} style={{ width: '100%', padding: 10, marginBottom: 8, borderRadius: 6, border: 'none', background: '#fff', color: '#0b1020' }} required />
+        <div style={{ position: 'relative', marginBottom: 8 }}>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Пароль (минимум 8 символов)"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            minLength={8}
+            style={{ width: '100%', padding: 10, paddingRight: 78, borderRadius: 6, border: 'none', background: '#fff', color: '#0b1020' }}
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(v => !v)}
+            style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#4b5563', fontSize: 12, cursor: 'pointer', padding: 4 }}
+          >
+            {showPassword ? 'Скрыть' : 'Показать'}
+          </button>
+        </div>
         <p style={{ fontSize: 12, opacity: 0.6, marginBottom: 24 }}>
           Регистрация создаёт аккаунт студента. Роль преподавателя назначает администратор.
         </p>
